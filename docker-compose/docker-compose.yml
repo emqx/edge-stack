@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  manager:
+    image: emqx/edge-manager:latest
+    container_name: edge-manager
+    ports:
+      - "9082:9082"
+  kuiper:
+    image: emqx/kuiper:latest
+    ports:
+      - "127.0.0.1:9081:9081"
+      - "127.0.0.1:20498:20498"
+    container_name: manager-kuiper
+    hostname: manager-kuiper
+  nano:
+    image: emqx/emqx-edge:latest
+    ports:
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:1883:1883"
+      - "127.0.0.1:18083:18083"
+    container_name: manager-nano
+    hostname: manager-nano
