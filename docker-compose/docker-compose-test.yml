@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  manager:
+    image: emqx/edge-manager:5c1048d
+    container_name: edge-manager
+    ports:
+      - "9082:9082"
+  kuiper:
+    image: emqx/kuiper:0.9.0-95-ge432754-slim
+    ports:
+      - "127.0.0.1:9081:9081"
+      - "127.0.0.1:20498:20498"
+    container_name: manager-kuiper
+    hostname: manager-kuiper
+    environment:
+      KUIPER__BASIC__DEBUG: "true"
+      KUIPER__BASIC__PLUGINHOSTS: "http://52.53.170.189"
+      MQTT_SOURCE__DEFAULT__SERVERS: "[tcp://manager-nano:1883]"
+  nano:
+    image: emqx/emqx-edge:latest
+    ports:
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:1883:1883"
+      - "127.0.0.1:18083:18083"
+    container_name: manager-nano
+    hostname: manager-nano
