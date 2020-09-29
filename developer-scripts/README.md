@@ -1,4 +1,20 @@
-# Docker Compose
+# Developer Scripts
+
+This folder contains scripts and docker compose files to quickly set up the emqx edge stack.
+
+## Running on linux
+
+For convenience, the `run.sh` will help you get up and running. It will add the local kuiper, neuron and edge nodes; setup the taos plugin in kuiper; create a default database in TDEngine and add it to grafana data source. Switch to this folder and run:
+
+```bash
+./run.sh
+```
+
+## Run docker compose directly
+
+If you only need to start up all dependant docker container without initializing any data, you can just run the docker compose file directly.
+
+### Run docker compose
 
 Run docker compose in this folder.
 
@@ -15,7 +31,7 @@ Notice that, these two nodes are running internally. If you need to access them 
 
 You can add nodes in the edge manager nodes page.
 
-## Docker compose test
+### Run Docker compose test
 
 For testing docker images, modify the `docker-compose-test.yml` to point the image to local images and run it.
 

@@ -25,3 +25,24 @@ services:
       - "127.0.0.1:18083:18083"
     container_name: manager-nano
     hostname: manager-nano
+  taos:
+    image: tdengine/tdengine:2.0.3.1
+    ports:
+      - "6030:6030"
+      - "6035:6035"
+      - "6041:6041"
+      - "6030-6040:6030-6040/udp"
+    container_name: manager-taos
+    hostname: taos
+    volumes:
+      - ./var/grafanaplugin:/root/TDengine-server/connector/grafanaplugin
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    container_name: manager-grafana
+    hostname: manager-grafana
+    volumes:
+      - ./var/grafanaplugin:/var/lib/grafana/plugins/taosplugin
+    depends_on:
+      - taos
