@@ -15,7 +15,7 @@ KUIPER_ENDPOINT="http://manager-kuiper:9081"
 NANO_ENDPOINT="http://manager-nano:8081"
 NEURON_ENDPOINT="http://manager-neuron:7000"
 TAOS_ENDPOINT="http://taos:6041"
-TDENGINE_PLUGIN="http://52.53.170.189/kuiper-plugins/0.9.1-26-g6a718e3/debian/sinks/tdengine_amd64.zip"
+#TDENGINE_PLUGIN="http://52.53.170.189/kuiper-plugins/0.9.1-26-g6a718e3/debian/sinks/tdengine_amd64.zip"
 
 ## Init nano
 ### Create topic?
@@ -31,7 +31,7 @@ docker exec manager-taos bash -c 'taos -s "create database db; use db; create ta
 ## Init Kuiper
 echo "init kuiper"
 ### Add tdengine plugin
-curl -d "{\"name\":\"tdengine\",\"file\":\"$TDENGINE_PLUGIN\",\"shellParas\": [\"2.0.3.1\"]}" $KUIPER/plugins/sinks || echo "Error: fail to add taos plugin to kuiper"
+#curl -d "{\"name\":\"tdengine\",\"file\":\"$TDENGINE_PLUGIN\",\"shellParas\": [\"2.0.3.1\"]}" $KUIPER/plugins/sinks || echo "Error: fail to add taos plugin to kuiper"
 ### Create nano stream
 #curl -d '{"sql":"CREATE STREAM extK (count bigint) WITH (DATASOURCE=\"users\", FORMAT=\"JSON\")"}' $KUIPER/streams ||  echo "Error: fail to create stream"
 ### Create rule

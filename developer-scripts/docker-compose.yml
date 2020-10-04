@@ -7,7 +7,7 @@ services:
     ports:
       - "9082:9082"
   kuiper:
-    image: 52.53.170.189:5000/emqx/kuiper:0.9.1-26-g6a718e3-slim
+    image: 52.53.170.189:5000/emqx/kuiper:0.9.1-30-ga620a7b-slim
     ports:
       - "127.0.0.1:9081:9081"
       - "127.0.0.1:20498:20498"
