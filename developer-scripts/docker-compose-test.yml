@@ -35,7 +35,7 @@ services:
     container_name: manager-taos
     hostname: taos
     volumes:
-      - ./var/grafanaplugin:/root/TDengine-server/connector/grafanaplugin
+      - taos-grafana-plugin:/root/TDengine-server/connector/grafanaplugin
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -43,6 +43,9 @@ services:
     container_name: manager-grafana
     hostname: manager-grafana
     volumes:
-      - ./var/grafanaplugin:/var/lib/grafana/plugins/taosplugin
+      - taos-grafana-plugin:/var/lib/grafana/plugins/taosplugin
     depends_on:
       - taos
+
+volumes:
+  taos-grafana-plugin:

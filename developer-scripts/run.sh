@@ -45,6 +45,6 @@ curl -d "{\"category\":2, \"nodetype\":0, \"name\":\"local_nano\", \"endpoint\":
 ## Init Grafana
 echo "init grafana"
 ### Create datasource
-curl -d "{\"name\":\"root/taosdata\",\"type\":\"graphite\", \"url\":\"$TAOS_ENDPOINT\",\"access\":\"proxy\"}" -H "$JSONHEADER" $GRAFANA/datasources || { echo "Error: fail to create grafana data source";}
+curl -d "{\"name\":\"root/taosdata\",\"type\":\"tdengine\",\"user\":\"root\",\"password\":\"taosdata\", \"url\":\"$TAOS_ENDPOINT\",\"access\":\"proxy\"}" -H "$JSONHEADER" $GRAFANA/datasources || { echo "Error: fail to create grafana data source";}
 ### Create report
 echo "All set up, please create the report in Grafana"
