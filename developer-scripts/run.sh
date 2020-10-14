@@ -2,7 +2,7 @@
 
 COMPOSE_FILE=${1:-docker-compose.yml}
 
-echo "\033[0;32mStarting.. $COMPOSE_FILE\033[0m"
+echo -e "\033[0;32mStarting.. $COMPOSE_FILE\033[0m"
 docker-compose -f "$COMPOSE_FILE" up -d || { echo "Error: fail to run docker compose";  exit 1; }
 
 # Define variables
@@ -28,10 +28,10 @@ docker exec manager-taos bash -c 'taos -s "create database db; use db; create ta
 
 ## Init Kuiper
 echo "init kuiper"
-### Add taos plugin
-
+### Add tdengine plugin
+curl -d '{"name":"tdengine","file":"file:///C:/repos/go/src/github.com/emqx/kuiper/plugins/testzips/sinks/file2.zip"}' -H "$JSONHEADER" $KUIPER/plugins/sinks || echo "Error: fail to add taos plugin to kuiper"
 ### Create nano stream
-curl -d '{"sql":"CREATE STREAM extK (count bigint) WITH (DATASOURCE=\"users\", FORMAT=\"JSON\")"}' -H "$JSONHEADER" $KUIPER/streams || { echo "Error: fail to create stream";  exit 1; }
+curl -d '{"sql":"CREATE STREAM extK (count bigint) WITH (DATASOURCE=\"users\", FORMAT=\"JSON\")"}' -H "$JSONHEADER" $KUIPER/streams ||  echo "Error: fail to create stream"
 ### Create rule
 
 ## Init manager
@@ -45,6 +45,9 @@ curl -d "{\"category\":2, \"nodetype\":0, \"name\":\"local_nano\", \"endpoint\":
 ## Init Grafana
 echo "init grafana"
 ### Create datasource
-curl -d "{\"name\":\"root/taosdata\",\"type\":\"tdengine\",\"user\":\"root\",\"password\":\"taosdata\", \"url\":\"$TAOS_ENDPOINT\",\"access\":\"proxy\"}" -H "$JSONHEADER" $GRAFANA/datasources || { echo "Error: fail to create grafana data source";}
+curl -d "{\"name\":\"TDengine\",\"type\":\"taosdata-tdengine-datasource\",\"access\":\"proxy\",\"isDefault\":true}
+" -H "$JSONHEADER" $GRAFANA/datasources || { echo "Error: fail to create grafana data source";}
 ### Create report
+curl -d "{\"dashboard\":{\"annotations\":{\"list\":[{\"builtIn\":1,\"datasource\":\"-- Grafana --\",\"enable\":true,\"hide\":true,\"iconColor\":\"rgba(0, 211, 255, 1)\",\"name\":\"Annotations & Alerts\",\"type\":\"dashboard\"}]},\"editable\":true,\"gnetId\":null,\"graphTooltip\":0,\"id\":null,\"links\":[],\"panels\":[{\"aliasColors\":{},\"bars\":false,\"dashLength\":10,\"dashes\":false,\"datasource\":\"TDengine\",\"fieldConfig\":{\"defaults\":{\"custom\":{}},\"overrides\":[]},\"fill\":1,\"fillGradient\":0,\"gridPos\":{\"h\":9,\"w\":12,\"x\":0,\"y\":0},\"hiddenSeries\":false,\"id\":2,\"legend\":{\"avg\":false,\"current\":false,\"max\":false,\"min\":false,\"show\":true,\"total\":false,\"values\":false},\"lines\":true,\"linewidth\":1,\"nullPointMode\":\"null\",\"options\":{\"alertThreshold\":true},\"percentage\":false,\"pluginVersion\":\"7.2.0\",\"pointradius\":2,\"points\":false,\"renderer\":\"flot\",\"seriesOverrides\":[],\"spaceLength\":10,\"stack\":false,\"steppedLine\":false,\"targets\":[{\"refId\":\"A\",\"sql\":\"select ts, temperature from db.t;\",\"target\":\"select metric\",\"type\":\"timeserie\"}],\"thresholds\":[],\"timeFrom\":null,\"timeRegions\":[],\"timeShift\":null,\"title\":\"Panel Title\",\"tooltip\":{\"shared\":true,\"sort\":0,\"value_type\":\"individual\"},\"type\":\"graph\",\"xaxis\":{\"buckets\":null,\"mode\":\"time\",\"name\":null,\"show\":true,\"values\":[]},\"yaxes\":[{\"format\":\"short\",\"label\":null,\"logBase\":1,\"max\":null,\"min\":null,\"show\":true},{\"format\":\"short\",\"label\":null,\"logBase\":1,\"max\":null,\"min\":null,\"show\":true}],\"yaxis\":{\"align\":false,\"alignLevel\":null}}],\"schemaVersion\":26,\"style\":\"dark\",\"tags\":[],\"templating\":{\"list\":[]},\"time\":{\"from\":\"now-6h\",\"to\":\"now\"},\"timepicker\":{},\"timezone\":\"\",\"title\":\"taos\",\"uid\":\"\",\"version\":0,\"hideControls\":false},\"message\":\"\",\"overwrite\":false,\"folderId\":0}" -H "$JSONHEADER" $GRAFANA/dashboards/db || { echo "Error: fail to create grafana dashboard";}
+
 echo "All set up, please create the report in Grafana"
