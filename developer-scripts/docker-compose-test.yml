@@ -2,12 +2,12 @@ version: '3.4'
 
 services:
   manager:
-    image: emqx/edge-manager:5c1048d
+    image: 52.53.170.189:5000/emqx/edge-manager:0.9.1-16-g7d1da36
     container_name: edge-manager
     ports:
       - "9082:9082"
   kuiper:
-    image: emqx/kuiper:0.9.0-95-ge432754-slim
+    image: 52.53.170.189:5000/emqx/kuiper:0.9.1-26-g6a718e3-slim
     ports:
       - "127.0.0.1:9081:9081"
       - "127.0.0.1:20498:20498"
@@ -25,6 +25,14 @@ services:
       - "127.0.0.1:18083:18083"
     container_name: manager-nano
     hostname: manager-nano
+  neuron:
+    image: 52.53.170.189:5000/emqx/neuron:0.5.3
+    ports:
+      - "127.0.0.1:7681:7681"
+      - "127.0.0.1:1947:1947"
+      - "127.0.0.1:7000:7000"
+    container_name: manager-neuron
+    hostname: manager-neuron
   taos:
     image: tdengine/tdengine:2.0.3.1
     ports:

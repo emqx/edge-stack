@@ -10,6 +10,21 @@ For convenience, the `run.sh` will help you get up and running. It will add the 
 ./run.sh
 ```
 
+The default running compose file is `docker-compose.yml`.
+To run another docker compose file, use:
+
+```bash
+./run.sh docker-compose-test.yml
+```
+
+To stop the current stack, run the command in the current folder.
+
+```bash
+docker-compose stop
+```
+
+Please refer to [docker compose doc](https://docs.docker.com/compose/reference/overview/) for more cli commands.
+
 ## Run docker compose directly
 
 If you only need to start up all dependant docker container without initializing any data, you can just run the docker compose file directly.
