@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   manager:
-    image: 52.53.170.189:5000/emqx/edge-manager:0.9.1-16-g7d1da36
+    image: 52.53.170.189:5000/emqx/edge-manager:0.9.1-18-gb52915b
     container_name: edge-manager
     ports:
       - "9082:9082"
@@ -15,15 +15,15 @@ services:
     hostname: manager-kuiper
     environment:
       KUIPER__BASIC__PLUGINHOSTS: "http://52.53.170.189"
-      MQTT_SOURCE__DEFAULT__SERVERS: "[tcp://manager-nano:1883]"
-  nano:
+      MQTT_SOURCE__DEFAULT__SERVERS: "[tcp://manager-edge:1883]"
+  edge:
     image: emqx/emqx-edge:latest
     ports:
       - "127.0.0.1:8081:8081"
       - "127.0.0.1:1883:1883"
       - "127.0.0.1:18083:18083"
-    container_name: manager-nano
-    hostname: manager-nano
+    container_name: manager-edge
+    hostname: manager-edge
   neuron:
     image: 52.53.170.189:5000/emqx/neuron:0.5.3
     ports:

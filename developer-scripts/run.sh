@@ -3,7 +3,7 @@
 COMPOSE_FILE=${1:-docker-compose.yml}
 
 echo -e "\033[0;32mStarting.. $COMPOSE_FILE\033[0m"
-docker-compose -f "$COMPOSE_FILE" up -d || { echo "Error: fail to run docker compose";  exit 1; }
+docker-compose -f "$COMPOSE_FILE" -p "emqx_edge_stack" up -d || { echo "Error: fail to run docker compose";  exit 1; }
 
 # Define variables
 LOCALHOST="http://127.0.0.1"
@@ -12,12 +12,12 @@ MANAGER="$LOCALHOST:9082/api"
 GRAFANA="http://admin:admin@127.0.0.1:3000/api"
 JSONHEADER="Content-Type: application/json"
 KUIPER_ENDPOINT="http://manager-kuiper:9081"
-NANO_ENDPOINT="http://manager-nano:8081"
+EDGE_ENDPOINT="http://manager-edge:8081"
 NEURON_ENDPOINT="http://manager-neuron:7000"
 TAOS_ENDPOINT="http://taos:6041"
 #TDENGINE_PLUGIN="http://52.53.170.189/kuiper-plugins/0.9.1-26-g6a718e3/debian/sinks/tdengine_amd64.zip"
 
-## Init nano
+## Init edge
 ### Create topic?
 
 ## Init neuron
@@ -32,7 +32,7 @@ docker exec manager-taos bash -c 'taos -s "create database db; use db; create ta
 echo "init kuiper"
 ### Add tdengine plugin
 #curl -d "{\"name\":\"tdengine\",\"file\":\"$TDENGINE_PLUGIN\",\"shellParas\": [\"2.0.3.1\"]}" $KUIPER/plugins/sinks || echo "Error: fail to add taos plugin to kuiper"
-### Create nano stream
+### Create edge stream
 #curl -d '{"sql":"CREATE STREAM extK (count bigint) WITH (DATASOURCE=\"users\", FORMAT=\"JSON\")"}' $KUIPER/streams ||  echo "Error: fail to create stream"
 ### Create rule
 
@@ -40,10 +40,10 @@ echo "init kuiper"
 echo "init manager"
 json=$(curl $MANAGER/login -sH "$JSONHEADER" -d '{"username":"admin","password":"public"}')
 token=$(echo $json | sed "s/{.*\"token\":\"\([^\"]*\).*}/\1/g")
-### Add nodes: neuron, nano, kuiper
-curl -d "{\"category\":0, \"nodetype\":0, \"name\":\"local_kuiper\", \"endpoint\":\"$KUIPER_ENDPOINT\"}" -H "$JSONHEADER" -H "Authorization: $token" $MANAGER/nodes || { echo "Error: fail to add default kuiper node";}
-curl -d "{\"category\":1, \"nodetype\":0, \"name\":\"local_neuron\", \"endpoint\":\"$NEURON_ENDPOINT\", \"apiVersion\": 1}" -H "$JSONHEADER" -H "Authorization: $token"  $MANAGER/nodes || { echo "Error: fail to add default neuron node";}
-curl -d "{\"category\":2, \"nodetype\":0, \"name\":\"local_nano\", \"endpoint\":\"$NANO_ENDPOINT\", \"apiVersion\": 4,\"key\": \"admin\",\"secret\": \"public\"}" -H "$JSONHEADER" -H "Authorization: $token"  $MANAGER/nodes || { echo "Error: fail to add default nano node";}
+### Add nodes: neuron, edge, kuiper
+curl -d "{\"nodetype\":0, \"name\":\"local_kuiper\", \"endpoint\":\"$KUIPER_ENDPOINT\"}" -H "$JSONHEADER" -H "Authorization: $token" $MANAGER/kuiper/nodes || { echo "Error: fail to add default kuiper node";}
+curl -d "{\"nodetype\":0, \"name\":\"local_neuron\", \"endpoint\":\"$NEURON_ENDPOINT\", \"apiVersion\": 1}" -H "$JSONHEADER" -H "Authorization: $token"  $MANAGER/neuron/nodes || { echo "Error: fail to add default neuron node";}
+curl -d "{\"nodetype\":0, \"name\":\"local_edge\", \"endpoint\":\"$EDGE_ENDPOINT\", \"apiVersion\": 4,\"key\": \"admin\",\"secret\": \"public\"}" -H "$JSONHEADER" -H "Authorization: $token"  $MANAGER/edge/nodes || { echo "Error: fail to add default edge node";}
 
 ## Init Grafana
 echo "init grafana"
