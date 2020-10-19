@@ -23,7 +23,6 @@ https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 For convenience, the `run.sh` will help you get up and running. It will add,
 
 - The local Kuiper, Neuron and Edge nodes; 
-- Setup the TDengine plugin in Kuiper; 
 - Create a default database in TDengine and add it to Grafana data source.  
 
 ```bash
@@ -34,58 +33,74 @@ developer-scripts/run.sh
 
 ### Setup Neuron
 
-**A Modbus TCP mockup tool**
+Open Neuron dashboard by click `Neuron` in the left menu, and then click `local_neuron` node. Then do the following setup.
 
-TODO...
-
-**Object settings**
-
-TODO...
-
-Import Neuron object settings... [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx)
+1. Install the Modbus simulator: *PeakHMISlaveSimulator*. After installation, open **Modbus TCP slave**.
+2. In the neuron dashboard, open Configuration -> Object Setup. Click *Edit Driver*, and setup the modbus tcp driver and mqtt.
+    
+    - Driver type: **Modbus TCP**.
+    - Host name: Fill in the host where the Modbus simulator is running on.
+    - Port: **502** by default.
+    - MQTT Host name: **manager-edge**, which is the local emqx edge node.
+    - MQTT Port: **1083**.
+    
+    ![Neuron driver setup](resources/neuron_driver.png)
+    
+    If the driver setup is correct, the Modbus simulator should show 1 client connected and keep receiving. Click "Submit" button, the **Modbus TCP** become the current driver.
+3. Click "Import" button, select [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx). There should be a new line added in the object table. Then click "Send" button at the top-right corner, which will send the configuration to Neuron and restart it.
+4. The setup is done now. We need to record the mqtt uuid for this object to be used in the later process. 
+    1. Click **edge** in the left menu. Then click **local_edge** in the node list to enter the EMQX edge dashboard.
+    2. In the edge dashboard, click **clients** in the left menu. There should be one client. Copy the client id and save it for the later use.
 
 ### Setup Kuiper
 
-#### Create a Neuron stream
+Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_kuiper` node. Then do the following setup.
 
-TODO..
+1. Create stream for neuron. Click "Create Stream", and setup as below. The last section of the Data Source field is the neuron client id in mqtt broker which we have saved before. Click "Submit".
 
-#### Create a rule 
+   ![Create kuiper stream for neuron](resources/create_stream.png)
+   
+2. Switch to "Plugins" tab, click "Create plugin", and setup as below. This will create the tdengine plugin so that the rule result can be ported to tdengine.
+     
+   ![Create kuiper plugin for tdengine](resources/create_plugin.png)
+   
+3. Create a rule. A rule will be created for subscribing data published by Neuron, and send the analysis result to TDengine. Switch to "Rules" tab, click "Create rule". Switch to "Text mode" in the top-right. Fill in Rule ID: **ruleNeuron** or any rule name you want. Enter the below json in the "text" field.
 
-A rule will be created for subscribing data published by Neuron, and send the analysis result to TDengine. 
-
-```json
-{
-  "sql": "SELECT tele[0]->Tag00001 AS temperature, tele[0]->Tag00002 AS humidity FROM neuron",
-  "actions": [
+    ```json
     {
-      "tdengine": {
-        "ip": "taos",
-        "port": 0,
-        "user": "root",
-        "password": "taosdata",
-        "database": "db",
-        "table": "t",
-        "fields": ["temperature","humidity"],
-        "provideTs": false,
-        "tsFieldName": "ts"
-      }
+      "sql": "SELECT tele[0]->Tag00001 AS temperature, tele[0]->Tag00002 AS humidity FROM neuron",
+      "actions": [
+        {
+          "tdengine": {
+            "ip": "taos",
+            "port": 0,
+            "user": "root",
+            "password": "taosdata",
+            "database": "db",
+            "table": "t",
+            "fields": ["temperature","humidity"],
+            "provideTs": false,
+            "tsFieldName": "ts"
+          }
+        }
+      ]
     }
-  ]
-}
-```
-
-
+    ```
+4. Click "Submit", make sure the rule is up and running. Click the rule status, there should be data in and out in the metrics.
 
 ### Query data in TDengine
 
-TODO...
+1. Go into the docker container of TDengine. 
+      
+   ```bash
+   docker exec -it manager-taos /bin/sh      
+   ```
+   
+2. The rule data is in database **db**, table **t**. Query the data with SQL like `use db;select * from t;`.
 
 ### Data visualization data with Grafana
 
-TODO...
-
-
+A default dashboard was automatically created by the script which connects to the TDengin **db.t** table. Open **http://yourhost:3000/dashboards** in the browser, click **taos** dashboard. It will show the temperature change over time visually.
 
 ## How to reset test environment
 
