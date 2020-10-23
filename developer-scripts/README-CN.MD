@@ -45,7 +45,7 @@ developer-scripts/run.sh
    - MQTT 主机名： **manager-edge**，这是本地 emqx 边缘节点。
    - MQTT 端口： **1083**。
 
-   ![Neuron driver setup](D:/emqx/edge-stack/developer-scripts/resources/neuron_driver.png)
+   ![Neuron driver setup](resources/neuron_driver.png)
 
    如果驱动程序设置正确，则 Modbus 模拟器应显示1个客户端已连接并继续接收。 点击“提交”按钮，**Modbus TCP** 成为当前驱动程序。
 
@@ -62,11 +62,11 @@ developer-scripts/run.sh
 
 1. 为 neuron 创建流。 点击“创建流”，然后进行如下设置。 数据源字段的最后一部分是我们之前保存的 mqtt broker 中的 neuron 客户端ID。 点击“提交”。
 
-   ![Create kuiper stream for neuron](D:/emqx/edge-stack/developer-scripts/resources/create_stream.png)
+   ![Create kuiper stream for neuron](resources/create_stream.png)
 
 2. 切换到“插件”标签页，点击“创建插件”，然后进行如下设置。 这将创建 tdengine 插件，以便可以将规则结果移植到 tdengine。
 
-   ![Create kuiper plugin for tdengine](D:/emqx/edge-stack/developer-scripts/resources/create_plugin.png)
+   ![Create kuiper plugin for tdengine](resources/create_plugin.png)
 
 3. 创建规则。 我们将创建一个规则来订阅 Neuron 发布的数据，并将分析结果发送到TDengine。 切换到“规则”标签页，点击“创建规则”。 通过右上角按钮切换到“文本模式”。 填写规则 ID： **ruleNeuron** 或任何你希望的规则名称。 在“文本”字段中输入以下json。
 
