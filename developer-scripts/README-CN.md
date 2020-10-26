@@ -1,6 +1,6 @@
 # 开发人员脚本
 
-[English](README.MD)|[简体中文](README-CN.MD)
+[English](README.md)|[简体中文](README-CN.md)
 
 该文件夹包含脚本和 docker compose 文件，以快速设置 EMQ X Edge Stack。
 

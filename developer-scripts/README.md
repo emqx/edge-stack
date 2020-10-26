@@ -1,6 +1,6 @@
 # Developer Scripts
 
-[English](README.MD)|[简体中文](README-CN.MD)
+[English](README.md)|[简体中文](README-CN.md)
 
 This folder contains scripts and docker compose files to quickly set up the EMQ X Edge Stack.
 
