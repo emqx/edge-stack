@@ -1,6 +1,6 @@
 # EMQ X edge stack
 
-[English](README.MD)|[简体中文](README-CN.MD)
+[English](README.md)|[简体中文](README-CN.md)
 
 The EMQ X edge stack consolidates all of EMQ edge softwares, and user can start to use edge stack with one-click deployment.
 

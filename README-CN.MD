@@ -1,5 +1,5 @@
 # EMQ X edge stack
-[English](README.MD)|[简体中文](README-CN.MD)
+[English](README.md)|[简体中文](README-CN.md)
 
 EMQ X Edge Stack 整合了所有 EMQ 边缘软件，用户可以通过一键式部署开始使用Edge Stack。
 
