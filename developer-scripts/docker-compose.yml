@@ -14,7 +14,6 @@ services:
     container_name: manager-kuiper
     hostname: manager-kuiper
     environment:
-      KUIPER__BASIC__PLUGINHOSTS: "http://52.53.170.189"
       MQTT_SOURCE__DEFAULT__SERVERS: "[tcp://manager-edge:1883]"
   edge:
     image: emqx/emqx-edge:latest
