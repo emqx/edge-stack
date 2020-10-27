@@ -23,6 +23,7 @@ https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 For convenience, the `run.sh` will help you get up and running. It will add,
 
 - The local Kuiper, Neuron and Edge nodes; 
+- Create a stream named "neuron" in Kuiper which connects to the local neuron's telemetry mqtt topic. 
 - Create a default database in TDengine and add it to Grafana data source.  
 
 ```bash
@@ -48,17 +49,15 @@ Open Neuron dashboard by click `Neuron` in the left menu, and then click `local_
     
     If the driver setup is correct, the Modbus simulator should show 1 client connected and keep receiving. Click "Submit" button, the **Modbus TCP** become the current driver.
 3. Click "Import" button, select [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx). There should be a new line added in the object table. Then click "Send" button at the top-right corner, which will send the configuration to Neuron and restart it.
-4. The setup is done now. We need to record the mqtt uuid for this object to be used in the later process. 
+4. The setup is done now. Then verify that neuron has connect to the EMQX edge. 
     1. Click **edge** in the left menu. Then click **local_edge** in the node list to enter the EMQX edge dashboard.
-    2. In the edge dashboard, click **clients** in the left menu. There should be one client. Copy the client id and save it for the later use.
+    2. In the edge dashboard, click **clients** in the left menu. There should be one client.
 
 ### Setup Kuiper
 
 Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_kuiper` node. Then do the following setup.
 
-1. Create stream for neuron. Click "Create Stream", and setup as below. The last section of the Data Source field is the neuron client id in mqtt broker which we have saved before. Click "Submit".
-
-   ![Create kuiper stream for neuron](resources/create_stream.png)
+1. Make sure the `neuron` stream is created. Go to the "Stream" tab, make sure a stream named `neuron` is in the stream list.
    
 2. Switch to "Plugins" tab, click "Create plugin", and setup as below. This will create the tdengine plugin so that the rule result can be ported to tdengine.
      
@@ -108,9 +107,7 @@ If you having any problems with your environment, then you can run following com
 
 ```shell
 cd developer-scripts
-docker-compose stop
-docker rm `docker ps -qa`
-docker volume prune
+docker-compose -p emqx_edge_stack down
 ```
 
 *Please notice that command `docker rm docker ps -qa` will remove all of docker instances, if you have docker instances other than edge-stacks and do not want to have all of them removed, please remove edge stack instances one by one.*
