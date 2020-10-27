@@ -23,6 +23,7 @@ https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 为了方便起见，`run.sh` 将帮助您启动和运行。 它将添加：
 
 - 本地的 Kuiper，Neuron 和 Edge 节点；
+- 在 Kuiper 中创建连接 Neuron telemetry 的 mqtt 主题的流；
 - 在 TDengine 中创建默认数据库，并将其添加到 Grafana 数据源。
 
 ```bash
@@ -51,18 +52,16 @@ developer-scripts/run.sh
 
 3. 点击“导入”按钮，选择 [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx)。 对象表中应添加新行。 然后点击右上角的“发送”按钮，这会将配置发送到 Neuron 并重新启动。
 
-4. 现在设置已经完成。 我们需要记录该对象的 mqtt uuid，以便在之后的进程中使用。
+4. 现在设置已经完成。 我们需要确认 neuron 已连接到 EMQX edge 节点。
 
    1. 点击左侧菜单中的 **edge** 。 然后在节点列表中点击 **local_edge** 以进入 EMQX edge 仪表板。
-   2. 在 edge 仪表板中，点击左侧菜单中的**客户端** 。 应该显示有一个客户， 复制客户端 ID 并保存以供以后使用。
+   2. 在 edge 仪表板中，点击左侧菜单中的**客户端** 。 应该显示有一个客户。
 
 ### 设置  Kuiper
 
 通过点击左侧菜单中的 `Kuiper` 打开 Kuiper 仪表板，然后点击 `local_kuiper` 节点，进行以下设置。
 
-1. 为 neuron 创建流。 点击“创建流”，然后进行如下设置。 数据源字段的最后一部分是我们之前保存的 mqtt broker 中的 neuron 客户端ID。 点击“提交”。
-
-   ![Create kuiper stream for neuron](resources/create_stream.png)
+1. 确认 neuron 流已创建。 在“流管理”标签页的流列表中，确认 neuron 流已自动创建。
 
 2. 切换到“插件”标签页，点击“创建插件”，然后进行如下设置。 这将创建 tdengine 插件，以便可以将规则结果移植到 tdengine。
 
@@ -113,9 +112,7 @@ developer-scripts/run.sh
 
 ```shell
 cd developer-scripts
-docker-compose stop
-docker rm `docker ps -qa`
-docker volume prune
+docker-compose -p emqx_edge_stack down
 ```
 
 *请注意，命令 `docker rm docker ps -qa` 将删除所有 docker 实例，如果您拥有除edge-stacks 以外的 docker 实例并且不想删除所有实例，请一一删除 edge stack 实例。* 
