@@ -18,6 +18,14 @@ Below is an example for how to install docker-compose in centos-7, you can find 
 
 https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 
+Below is an example for how to install docker-compose in ubuntu18 arm.
+
+```
+apt-get install python3 python3-dev python3-pip libffi-dev libevent-dev
+pip3 install docker-compose
+```
+
+
 ### Up & running
 
 For convenience, the `run.sh` will help you get up and running. It will add,
