@@ -18,6 +18,13 @@
 
 https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 
+以下是如何在ubuntu18 arm中安装docker-compose 的示例
+```
+sudo apt-get install python3 python3-dev python3-pip libffi-dev libevent-dev
+pip3 install docker-compose
+
+```
+
 ### 启动和运行
 
 为了方便起见，`run.sh` 将帮助您启动和运行。 它将添加：
