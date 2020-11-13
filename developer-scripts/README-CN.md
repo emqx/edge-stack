@@ -44,7 +44,7 @@ developer-scripts/run.sh
    - 主机名：填写运行 Modbus 模拟器的主机。
    - 端口：默认为502。
    - MQTT 主机名： **manager-edge**，这是本地 emqx 边缘节点。
-   - MQTT 端口： **1083**。
+   - MQTT 端口： **1883**。
 
    ![Neuron driver setup](resources/neuron_driver.png)
 
