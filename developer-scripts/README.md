@@ -43,7 +43,7 @@ Open Neuron dashboard by click `Neuron` in the left menu, and then click `local_
     - Host name: Fill in the host where the Modbus simulator is running on.
     - Port: **502** by default.
     - MQTT Host name: **manager-edge**, which is the local emqx edge node.
-    - MQTT Port: **1083**.
+    - MQTT Port: **1883**.
     
     ![Neuron driver setup](resources/neuron_driver.png)
     
