@@ -19,10 +19,9 @@
 https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 
 以下是如何在ubuntu18 arm中安装docker-compose 的示例
-```
+```shell
 sudo apt-get install python3 python3-dev python3-pip libffi-dev libevent-dev
 pip3 install docker-compose
-
 ```
 
 ### 启动和运行
@@ -59,6 +58,9 @@ developer-scripts/run.sh
 
 3. 点击“导入”按钮，选择 [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx)。 对象表中应添加新行。 然后点击右上角的“发送”按钮，这会将配置发送到 Neuron 并重新启动。
 
+   - 其中 Tag00001 ~ Tag00004 为只读的寄存器
+   - Tag00005 为可读写的寄存器
+
 4. 现在设置已经完成。 我们需要确认 neuron 已连接到 EMQX edge 节点。
 
    1. 点击左侧菜单中的 **edge** 。 然后在节点列表中点击 **local_edge** 以进入 EMQX edge 仪表板。
@@ -74,7 +76,9 @@ developer-scripts/run.sh
 
    ![Create kuiper plugin for tdengine](resources/create_plugin.png)
 
-3. 创建规则。 我们将创建一个规则来订阅 Neuron 发布的数据，并将分析结果发送到TDengine。 切换到“规则”标签页，点击“创建规则”。 通过右上角按钮切换到“文本模式”。 填写规则 ID： **ruleNeuron** 或任何你希望的规则名称。 在“文本”字段中输入以下json。
+3. 创建规则。 
+
+   - 我们将创建一个规则来订阅 Neuron 发布的数据，并将分析结果发送到TDengine。 切换到“规则”标签页，点击“创建规则”。 通过右上角按钮切换到“文本模式”。 填写规则 ID： **ruleNeuron** 或任何你希望的规则名称。 在“文本”字段中输入以下json。点击“提交”，确保规则已启动并正在运行。 点击规则状态，指标中应该有数据输入和输出。
 
    ```json
    {
@@ -97,7 +101,23 @@ developer-scripts/run.sh
    }
    ```
 
-4. 点击“提交”，确保规则已启动并正在运行。 点击规则状态，指标中应该有数据输入和输出。
+   - 规则2: 创建一个名为`rule2` 的规则，该规则在温度为 30 度的时候，反向控制设备，往 Tag00005 所在的寄存器写入值 `3` 。点击“提交”，确保规则已启动并正在运行。 点击规则状态，指标中应该有数据输入和输出。
+
+   ```json
+   {
+     "sql": "SELECT tele[0]->Tag00001 AS temperature, tele[0]->Tag00002 AS humidity FROM neuron WHERE temperature = 30",
+     "actions": [
+       {
+         "rest": {
+           "url": "http://manager-neuron:7000/api/v1/funcno51/funcno51",       
+           "method": "post",
+           "dataTemplate": "{\"func\":51,\"srcn\":\"Device\",\"attn\":\"Tag00005\",\"valn\":3,\"wtrm\":\"neruon\"}",
+           "sendSingle": true
+         }
+       }
+     ]
+   }
+   ```
 
 ### 在 TDengine 中查询数据
 
@@ -112,6 +132,8 @@ developer-scripts/run.sh
 ### 通过 Grafana 进行数据可视化
 
 默认仪表板是由连接到 TDengin **db.t** 表的脚本自动创建的。通过浏览器打开 **http://yourhost:3000/dashboards** ，点击 **taos** 仪表板。它将直观地显示温度随时间的变化。
+
+读者可以试着通过 *PeakHMISlaveSimulator* 将 Tag00001 的值设置为30，然后再观察一下 Tag00005 的值变化，如果一切运行正常，Tag00005 寄存器的值将被设置为 3。
 
 ## 如何重置测试环境
 

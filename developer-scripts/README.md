@@ -20,8 +20,8 @@ https://linuxize.com/post/how-to-install-and-use-docker-compose-on-centos-7/
 
 Below is an example for how to install docker-compose in ubuntu18 arm.
 
-```
-apt-get install python3 python3-dev python3-pip libffi-dev libevent-dev
+```shell
+sudo apt-get install python3 python3-dev python3-pip libffi-dev libevent-dev
 pip3 install docker-compose
 ```
 
@@ -45,8 +45,9 @@ developer-scripts/run.sh
 Open Neuron dashboard by click `Neuron` in the left menu, and then click `local_neuron` node. Then do the following setup.
 
 1. Install the Modbus simulator: *PeakHMISlaveSimulator*. After installation, open **Modbus TCP slave**.
+
 2. In the neuron dashboard, open Configuration -> Object Setup. Click *Edit Driver*, and setup the modbus tcp driver and mqtt.
-    
+   
     - Driver type: **Modbus TCP**.
     - Host name: Fill in the host where the Modbus simulator is running on.
     - Port: **502** by default.
@@ -56,7 +57,13 @@ Open Neuron dashboard by click `Neuron` in the left menu, and then click `local_
     ![Neuron driver setup](resources/neuron_driver.png)
     
     If the driver setup is correct, the Modbus simulator should show 1 client connected and keep receiving. Click "Submit" button, the **Modbus TCP** become the current driver.
+    
 3. Click "Import" button, select [neuron_batch_modbus_5.xlsx](neuron_batch_modbus_5.xlsx). There should be a new line added in the object table. Then click "Send" button at the top-right corner, which will send the configuration to Neuron and restart it.
+
+    - From Tag00001 to Tag00004 is the read-only register.
+
+    - Tag00005 is the read-writer register.
+
 4. The setup is done now. Then verify that neuron has connect to the EMQX edge. 
     1. Click **edge** in the left menu. Then click **local_edge** in the node list to enter the EMQX edge dashboard.
     2. In the edge dashboard, click **clients** in the left menu. There should be one client.
@@ -68,10 +75,12 @@ Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_
 1. Make sure the `neuron` stream is created. Go to the "Stream" tab, make sure a stream named `neuron` is in the stream list.
    
 2. Switch to "Plugins" tab, click "Create plugin", and setup as below. This will create the tdengine plugin so that the rule result can be ported to tdengine.
-     
+   
    ![Create kuiper plugin for tdengine](resources/create_plugin.png)
    
-3. Create a rule. A rule will be created for subscribing data published by Neuron, and send the analysis result to TDengine. Switch to "Rules" tab, click "Create rule". Switch to "Text mode" in the top-right. Fill in Rule ID: **ruleNeuron** or any rule name you want. Enter the below json in the "text" field.
+3. Create a rule. 
+
+    - A rule will be created for subscribing data published by Neuron, and send the analysis result to TDengine. Switch to "Rules" tab, click "Create rule". Switch to "Text mode" in the top-right. Fill in Rule ID: **ruleNeuron** or any rule name you want. Enter the below json in the "text" field. Click "Submit", make sure the rule is up and running. Click the rule status, there should be data in and out in the metrics.
 
     ```json
     {
@@ -93,12 +102,29 @@ Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_
       ]
     }
     ```
-4. Click "Submit", make sure the rule is up and running. Click the rule status, there should be data in and out in the metrics.
+
+    - Rule 2: Create a rule named `rule2` to control the device when temperature is 30 degree, and write value `3` to the register where Tag00005 bind. Click "Submit", make sure the rule is up and running. Click the rule status, there should be data in and out in the metrics.
+
+    ```json
+    {
+      "sql": "SELECT tele[0]->Tag00001 AS temperature, tele[0]->Tag00002 AS humidity FROM neuron WHERE temperature = 30",
+      "actions": [
+        {
+          "rest": {
+            "url": "http://manager-neuron:7000/api/v1/funcno51/funcno51",       
+            "method": "post",
+            "dataTemplate": "{\"func\":51,\"srcn\":\"Device\",\"attn\":\"Tag00005\",\"valn\":3,\"wtrm\":\"neruon\"}",
+            "sendSingle": true
+          }
+        }
+      ]
+    }
+    ```
 
 ### Query data in TDengine
 
 1. Go into the docker container of TDengine. 
-      
+   
    ```bash
    docker exec -it manager-taos /bin/sh      
    ```
@@ -108,6 +134,8 @@ Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_
 ### Data visualization data with Grafana
 
 A default dashboard was automatically created by the script which connects to the TDengin **db.t** table. Open **http://yourhost:3000/dashboards** in the browser, click **taos** dashboard. It will show the temperature change over time visually.
+
+You can try to set value of  Tag00001 to 30 in *PeakHMISlaveSimulator*, and then observe the value of  Tag00005. If everything goes well, the value of  Tag00005 register will be set to 3.
 
 ## How to reset test environment
 
