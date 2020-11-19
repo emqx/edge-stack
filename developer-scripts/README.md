@@ -111,7 +111,7 @@ Open Kuiper dashboard by click `Kuiper` in the left menu, and then click `local_
       "actions": [
         {
           "rest": {
-            "url": "http://manager-neuron:7000/api/v1/funcno51/funcno51",       
+            "url": "http://manager-neuron:7000/api/v1/funcno51",       
             "method": "post",
             "dataTemplate": "{\"func\":51,\"srcn\":\"Device\",\"attn\":\"Tag00005\",\"valn\":3,\"wtrm\":\"neruon\"}",
             "sendSingle": true
