@@ -2,12 +2,12 @@ version: '3.4'
 
 services:
   manager:
-    image: emqx/edge-manager:1.0.1
+    image: emqx/edge-manager:1.0.2
     container_name: edge-manager
     ports:
       - "9082:9082"
   kuiper:
-    image: emqx/kuiper:1.0.1-slim
+    image: emqx/kuiper:1.0.2-slim
     ports:
       - "127.0.0.1:9081:9081"
       - "127.0.0.1:20498:20498"
@@ -24,7 +24,7 @@ services:
     container_name: manager-edge
     hostname: manager-edge
   neuron:
-    image: emqx/neuron:1.0.1
+    image: emqx/neuron:1.0.2
     ports:
       - "127.0.0.1:7681:7681"
       - "127.0.0.1:1947:1947"
