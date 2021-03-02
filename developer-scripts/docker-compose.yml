@@ -24,7 +24,7 @@ services:
     container_name: manager-edge
     hostname: manager-edge
   neuron:
-    image: emqx/neuron:1.1.0
+    image: emqx/neuron:1.1.3
     ports:
       - "127.0.0.1:7681:7681"
       - "127.0.0.1:1947:1947"
