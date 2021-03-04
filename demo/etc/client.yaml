@@ -1,0 +1,19 @@
+basic:
+  # The wormhole server address
+  server: 120.24.66.26
+  # The wormhole server port
+  port: 4242
+  #The agent id for registering the agent.
+  agentId: 7467bdd3-ab55-4de3-848f-702bd6760971
+
+log:
+  # Set log level, default to false
+  debug: true
+  # Print to console or not
+  consoleLog: true
+  # The log path
+  logPath: log
+
+miscs:
+  # The http timeout setting
+  httpTimeout: 10
