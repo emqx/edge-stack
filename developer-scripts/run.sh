@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 COMPOSE_FILE=${1:-docker-compose.yml}
 
@@ -31,8 +31,8 @@ HealthCheck () {
       if [ $curl_code -ne 0 ] || [ $status_code = 503 ]; then
           echo "Connection has not been established yet, because connection refused or service unavailable. Trying to connect again"
           sleep $delay
-          let counter=$counter+1
-          let delay=$delay*2
+          counter=$((counter+1))
+          delay=$((delay*2))
           continue
       elif [ $status_code = 200 ] || [ $status_code = 201 ]; then
           echo "Connection is successfully established"
